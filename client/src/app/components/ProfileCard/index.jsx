@@ -1,6 +1,9 @@
 import "./style.css"
 
 const ProfileCard = () => {
+
+    let profilePage = true;
+
     return(
         <div className="profile-card">
             <div className="profile-images">
@@ -20,17 +23,28 @@ const ProfileCard = () => {
                         <span>600</span>
                         <span>Following</span>
                     </div>
-                    <div className="vl">
-                    </div>
+
+                    <div className="vl"></div>
+
                     <div className="follow">
                         <span>300</span>
                         <span>Followers</span>
                     </div>
+
+                    {profilePage && (
+                        <>
+                            <div className="vl"></div>
+                            <div className="follow">
+                                <span>3</span>
+                                <span>Posts</span>
+                            </div>
+                        </>
+                    )}
                 </div>
                 <hr />
             </div>
+            { profilePage? '' : <span>My profile</span>}
 
-            <span>My profile</span>
         </div>
     )
 }
