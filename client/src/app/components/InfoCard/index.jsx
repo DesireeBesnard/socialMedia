@@ -1,13 +1,19 @@
 import "./style.css"
 import { BsPencil } from "react-icons/bs";
+import { useState } from "react";
+import ProfileModal from "../ProfilModal";
 
 const InfoCard = () => {
+
+    const [modalOpened, setModalOpened] = useState(false)
+
     return (
         <div className="infocard">
             <div className="infoHead">
                 <h4>Your info</h4>
                 <div>
-                    < BsPencil size={15}/>
+                    < BsPencil size={15} onClick={() => {setModalOpened(true)} }/>
+                    <ProfileModal modalOpened={modalOpened} setModalOpened={setModalOpened} />
                 </div>
             </div>
 
