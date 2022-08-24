@@ -1,4 +1,3 @@
-import "./style.css"
 import { Modal, useMantineTheme } from '@mantine/core';
 
 const ProfileModal = ({modalOpened, setModalOpened}) => {

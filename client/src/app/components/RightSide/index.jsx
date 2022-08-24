@@ -1,8 +1,13 @@
 import "./style.css"
+import { useState } from "react";
 import { FiSettings } from "react-icons/fi";
 import TrendCard from "../TrendCard"
+import ShareModal from "../ShareModal";
 
 const RightSide = () => {
+
+    const [modalOpened, setModalOpened] = useState(false)
+
     return(
         <div className="rightSide">
             <div className="navIcons">
@@ -14,9 +19,10 @@ const RightSide = () => {
 
             <TrendCard />
 
-            <button className="button r-button">
+            <button onClick={() => {setModalOpened(true)}} className="button r-button" >
                 Share
             </button>
+            <ShareModal modalOpened={modalOpened} setModalOpened={setModalOpened} />
         </div>
     )
 }
