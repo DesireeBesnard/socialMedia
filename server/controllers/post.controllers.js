@@ -100,12 +100,6 @@ export const getTimeLinePosts = async(req, res) => {
                     foreignField: "userId",
                     as: "followingPosts"
                 }
-            },
-            {
-                $project: {
-                    followingPosts: 1,
-                    _id: 0
-                }
             }
         ])
         res.status(200).json(currentUserPosts.concat(...followingPosts[0].followingPosts).sort((a,b)=> {
