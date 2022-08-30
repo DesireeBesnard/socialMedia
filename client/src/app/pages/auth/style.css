@@ -38,6 +38,14 @@
     font-size:  0.85rem;
 }
 
+.errmsg {
+
+}
+
+.offscreen {
+    
+}
+
 .info-form {
     display: flex;
     flex-direction: column;
