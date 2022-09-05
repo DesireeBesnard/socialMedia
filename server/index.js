@@ -13,8 +13,8 @@ const app = express()
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use('/auth', authRoute)
-app.use('/user', userRoute)
-app.use('/posts', postRoute)
+//app.use('/user', userRoute)
+//app.use('/posts', postRoute)
 
 app.listen(process.env.PORT, () =>console.log(`Listening at ${process.env.PORT}`))
 
