@@ -1,4 +1,5 @@
-//import { PostDAO } from "../dao/auth.dao.js"
+import { PostDAO } from "../dao/post.dao.js"
+const postDAO = PostDAO.getInstance()
 
 export class PostService {
 
@@ -12,27 +13,31 @@ export class PostService {
     }
 
     async create(post) {
-        const newPost = await PostDAO.getInstance().create(post)
+        const newPost = await postDAO.create(post)
         return newPost
     }
 
-    async get(id) {
-        return await PostDAO.getInstance().get(id)
+    async get(postId) {
+        return await postDAO.get(postId)
     }
 
-    async update(postId, userId) {
-        return await PostDAO.getInstance().update(postId, userId)
+    async update(post, update) {
+        return await postDAO.update(post, update)
     }
 
-    async delete(id, userId) {
-        return await PostDAO.getInstance().delete(id, userId)
+    async delete(post, update) {
+        return await postDAO.delete(post, update)
     }
 
-    async like(id, userId) {
-        return await PostDAO.getInstance().like(id, userId)
+    async like(post, userId) {
+        return await postDAO.like(post, userId)
     }
 
-    async login(getTimeLinePosts) {
-        return await PostDAO.getInstance().getTimeLinePosts(userId)
+    async dislike(post, userId) {
+        return await postDAO.dislike(post, userId)
+    }
+
+    async getTimeLinePosts(type, userId) {
+        return await postDAO.getTimeLinePosts(type, userId)
     }
 }

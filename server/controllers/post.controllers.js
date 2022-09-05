@@ -1,7 +1,5 @@
-import mongoose from "mongoose";
-import postModel from "../models/post.js";
-import UserModel from "../models/user.js";
-import {PostService} from "../services/post.service.js"
+import { PostService } from "../services/post.service.js"
+const postService = PostService.getInstance()
 
 
 export class PostController {
@@ -16,161 +14,96 @@ export class PostController {
     }
 
     async createPost(req, res) {
-    
-        const newPost = await PostService.getInstance().create(req.body)
-        res.status(200).send(newPost)
+        try {
+            const newPost = await postService.create(req.body)
+            res.status(200).send(newPost)
+        } catch (error) {
+            res.status(500).json(error)
+        }
     }
 
     async getPost(req, res) {
 
-        const id = req.params.id
-        const post = await PostService.getInstance.get(id)
-        res.status(200).send(post)
+        try {
+            const postId = req.params.id
+            const post = await postService.get(postId)
+            res.status(200).send(post)
+        } catch (error) {
+            res.status(500).json("Not existing post")
+        }
     }
 
     async updatePost(req, res) {
 
-        const postId = req.params.id
-        const {userId} = req.body
-
-        const post = await PostService.getInstance.update(postId, userId)
-        res.status(200).send(post)
+        try {
+            const postId = req.params.id
+            const {userId} = req.body
+    
+            const post = await postService.get(postId)
+            if (post.userId === userId) {
+                await postService.update(post, req.body)
+                res.status(200).send("Post updated!")
+            } else {
+                res.status(403).send("Action forbidden")
+            }
+        } catch (error) {
+            res.status(500).json(error)            
+        }
     }
 
     async deletePost(req, res) {
 
-        const id = req.params.id
-        const {userId} = req.body
+        try {
+            const postId = req.params.id
+            const {userId} = req.body
 
-        const post = await PostService.getInstance.delete(id, userId)
-        res.status(200).send("Post deleted")
+            const post = await postService.get(postId)
+            if (post.userId === userId) {
+                await postService.delete(post, req.body)
+                res.status(200).send("Post deleted!")
+            } else {
+                res.status(403).send("Action forbidden")
+            }
+        } catch (error) {
+            res.status(500).json(error)            
+        }
     }
 
     async likePost(req, res) {
 
-        const id = req.params.id
-        const {userId} = req.body
+        try {
+            const postId = req.params.id
+            const {userId} = req.body
+    
+            const post = await postService.get(postId)
 
-        const post = await PostService.getInstance.like(id, userId)
-        res.status(200).send(post)
+            if((post.userId !== userId) && (!post.likes.includes(userId))) {
+                await postService.like(post, userId)
+                res.status(200).json("Post liked")
+            } else {
+                await postService.dislike(post, userId)
+                res.status(200).json("Post unliked")
+            }
+        } catch (error) {
+            res.status(500).json(error)            
+        }
     }
 
     async getTimeLinePosts(req, res) {
-        const userId = req.params.id
+        try {
+            const userId = req.params.id
 
-        const currentUserPosts = await PostService.getInstance.getTimeLinePosts(userId)
-        res.status(200).send(currentUserPosts)
+            const currentUserPosts = await postService.getTimeLinePosts("current", userId)
+            const followingPosts = await postService.getTimeLinePosts("follow", userId)
 
-    }
-}
+            const timeLine = currentUserPosts.concat(...followingPosts[0].followingPosts).sort((a, b) => {
+                return b.createdAt - a.createdAt
+            })
 
-/*
-export const createPost = async(req, res) => {
-    const newPost = new postModel(req.body)
+            res.status(200).send(timeLine)
 
-    try {
-        await newPost.save()
-        res.status(200).json("Post created")
-    } catch (error) {
-        res.status(500).json(error)
-    }
-}
-
-export const getPost = async(req, res) => {
-    const id = req.params.id
-    try {
-        const post = await postModel.findById(id)
-        res.status(200).json(post)
-        
-    } catch (error) {
-        res.status(500).json(error)
-    }
-}
-
-export const updatePost = async(req, res) => {
-    const postId = req.params.id
-    const {userId} = req.body
-
-    try {
-        const post = await postModel.findById(postId)
-
-        if(post.userId === userId) {
-            await post.updateOne( {$set: req.body})
-            res.status(200).json("Post updated")
-        } else {
-            res.status(403).json("Action forbidden")
+        } catch (error) {
+            res.status(500).json(error)            
         }
-
-    } catch (error) {
-        res.status(500).json(error)
     }
 }
-
-export const deletePost = async(req, res) => {
-    const id = req.params.id
-    const {userId} = req.body
-
-    try {
-        const post = await postModel.findById(id)
-
-        if(post.userId === userId) {
-            await post.deleteOne()
-            res.status(200).json("Post deleted")
-        } else {
-            res.status(403).json("Action forbidden")
-        }
-
-    } catch (error) {
-        res.status(500).json(error)
-    }
-}
-
-export const likePost = async(req, res) => {
-    const id = req.params.id
-    const {userId} = req.body
-
-    try {
-        const post = await postModel.findById(id)
-        if(!post.likes.includes(userId)) {
-            await post.updateOne({$push: {likes: userId}})
-            res.status(200).json("Post liked")
-        } else {
-            await post.updateOne({$pull: {likes: userId}})
-            res.status(200).json("Post unliked")
-        }
-
-    } catch (error) {
-        res.status(500).json(error)
-    }
-}
-
-//get Timeline posts
-export const getTimeLinePosts = async(req, res) => {
-    const userId = req.params.id
-
-    try {
-        const currentUserPosts = await postModel.find({userId: userId})
-        const followingPosts = await UserModel.aggregate([
-            {
-                $match: {
-                    _id : new mongoose.Types.ObjectId(userId)
-                }
-            },
-            {
-                $lookup: {
-                    from: "posts",
-                    localField: "following",
-                    foreignField: "userId",
-                    as: "followingPosts"
-                }
-            }
-        ])
-        res.status(200).json(currentUserPosts.concat(...followingPosts[0].followingPosts).sort((a,b)=> {
-            return b.createdAt - a.createdAt
-        }))
-        
-    } catch (error) {
-        res.status(500).json(error)
-    }
-
-}*/
