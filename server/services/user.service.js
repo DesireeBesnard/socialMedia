@@ -1,5 +1,4 @@
 import { UserDAO } from "../dao/user.dao.js"
-import UserModel from "../models/user.js"
 const userDAO = UserDAO.getInstance()
 
 export class UserService {

@@ -7,7 +7,7 @@ export class UserDAO {
 
     static getInstance() {
         if(!UserDAO.instance) {
-            UserDAO.instance = new UserDAO
+            UserDAO.instance = new UserDAO()
         }
         return UserDAO.instance
     }
